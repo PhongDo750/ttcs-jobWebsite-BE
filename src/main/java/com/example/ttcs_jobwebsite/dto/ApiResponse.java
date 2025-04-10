@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class ApiResponse<T> {
+    @Builder.Default
     private int code = 200;
     private String message = "OK";
     private T data;
