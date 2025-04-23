@@ -17,6 +17,7 @@ import com.example.ttcs_jobwebsite.repository.UserRepository;
 import com.example.ttcs_jobwebsite.token.TokenHelper;
 import lombok.AllArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,15 +36,15 @@ public class UserService {
     @Transactional
     public TokenResponse signUp(UserRequest signUpRequest) {
         if (Boolean.TRUE.equals(userRepository.existsByUsername(signUpRequest.getUsername()))) {
-            throw new AppException(ErrorCode.USERNAME_EXISTED);
+            throw new AppException(HttpStatus.BAD_REQUEST, ErrorCode.USERNAME_EXISTED);
         }
 
         if (Boolean.TRUE.equals(userRepository.existsByEmail(signUpRequest.getEmail()))) {
-            throw new AppException(ErrorCode.EMAIL_EXISTED);
+            throw new AppException(HttpStatus.BAD_REQUEST, ErrorCode.EMAIL_EXISTED);
         }
 
         if (Boolean.TRUE.equals(userRepository.existsByPhoneNumber(signUpRequest.getPhoneNumber()))) {
-            throw new AppException(ErrorCode.PHONE_EXISTED);
+            throw new AppException(HttpStatus.BAD_REQUEST, ErrorCode.PHONE_EXISTED);
         }
 
         signUpRequest.setPassword(BCrypt.hashpw(signUpRequest.getPassword(), BCrypt.gensalt()));

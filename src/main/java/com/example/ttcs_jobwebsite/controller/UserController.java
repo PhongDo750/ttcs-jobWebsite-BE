@@ -23,7 +23,7 @@ public class UserController {
 
     @Operation(summary = "Đăng ký tài khoản")
     @PostMapping("sign-up")
-    public ApiResponse<TokenResponse> signUp(@RequestBody UserRequest signUpRequest){
+    public ApiResponse<TokenResponse> signUp(@RequestBody @Valid UserRequest signUpRequest){
         return ApiResponse.<TokenResponse>builder()
                 .data(userService.signUp(signUpRequest))
                 .build();
@@ -42,7 +42,7 @@ public class UserController {
 
     @Operation(summary = "Lấy lại mật khẩu")
     @PostMapping("/recover-password")
-    public ApiResponse<?> recoverPassword(@RequestBody RecoverPassword recoverPassword) {
+    public ApiResponse<?> recoverPassword(@RequestBody @Valid RecoverPassword recoverPassword) {
         return userService.recoverPassword(recoverPassword);
     }
 

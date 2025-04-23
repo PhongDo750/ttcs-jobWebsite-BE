@@ -7,6 +7,7 @@ import com.example.ttcs_jobwebsite.dto.job.JobOutputV1;
 import com.example.ttcs_jobwebsite.dto.job.JobOutputV2;
 import com.example.ttcs_jobwebsite.service.JobService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
@@ -30,7 +31,7 @@ public class JobController {
     @Operation(summary = "Update Job")
     @PostMapping("/update")
     public void updateJob(@RequestHeader(Common.AUTHORIZATION) String accessToken,
-                          @RequestBody JobInput jobInput,
+                          @RequestBody @Valid JobInput jobInput,
                           @RequestParam Long jobId) {
         jobService.updateJob(accessToken, jobInput, jobId);
     }

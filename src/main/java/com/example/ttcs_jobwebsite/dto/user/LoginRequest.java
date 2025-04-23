@@ -11,8 +11,8 @@ import lombok.Setter;
 @Setter
 @Getter
 public class LoginRequest {
-    @NotEmpty
+    @NotEmpty(message = "Tên tài khoản không được để trống")
     private String username;
-    @NotEmpty
+    @NotEmpty(message = "Mật khẩu không được để trống")
     private String password;
 }
