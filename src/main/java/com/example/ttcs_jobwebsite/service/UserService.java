@@ -61,11 +61,11 @@ public class UserService {
     public TokenResponse logIn(LoginRequest loginRequest) {
         UserEntity userEntity = userRepository.findByUsername(loginRequest.getUsername());
         if (Objects.isNull(userEntity)) {
-            throw new AppException(ErrorCode.USERNAME_NOT_EXISTED);
+            throw new AppException(HttpStatus.UNAUTHORIZED, ErrorCode.USERNAME_NOT_EXISTED);
         }
 
         if (!BCrypt.checkpw(loginRequest.getPassword(), userEntity.getPassword())) {
-            throw new AppException(ErrorCode.INCORRECT_PASSWORD);
+            throw new AppException(HttpStatus.UNAUTHORIZED, ErrorCode.INCORRECT_PASSWORD);
         }
         return TokenResponse.builder()
                 .accessToken(TokenHelper.generateToken(userEntity))
@@ -77,7 +77,7 @@ public class UserService {
     public ApiResponse<?> sendCodeToEmail(String userName) {
         UserEntity userEntity = userRepository.findByUsername(userName);
         if (Objects.isNull(userEntity)) {
-            throw new AppException(ErrorCode.USERNAME_NOT_EXISTED);
+            throw new AppException(HttpStatus.UNAUTHORIZED, ErrorCode.USERNAME_NOT_EXISTED);
         }
         String code = generateCode();
         EmailDetails emailDetails = EmailDetails.builder()
