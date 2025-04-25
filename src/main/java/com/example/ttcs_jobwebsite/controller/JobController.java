@@ -24,7 +24,7 @@ public class JobController {
     @Operation(summary = "Đăng tuyển")
     @PostMapping("/create")
     public ApiResponse<?> createJob(@RequestHeader(Common.AUTHORIZATION) String accessToken,
-                                    @RequestBody JobInput jobInput) {
+                                    @RequestBody @Valid JobInput jobInput) {
         return jobService.createJob(accessToken, jobInput);
     }
 

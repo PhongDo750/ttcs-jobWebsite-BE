@@ -20,6 +20,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,10 +47,15 @@ public class JobService {
         Long userId = TokenHelper.getUserIdFromToken(accessToken);
         UserEntity userEntity = customRepository.getUserBy(userId);
         if (!userEntity.getRole().equals(Common.RECRUITER)) {
-            throw new AppException(ErrorCode.UN_AUTHORIZATION);
+            throw new AppException(HttpStatus.UNAUTHORIZED, ErrorCode.UN_AUTHORIZATION);
         }
 
         JobEntity jobEntity = jobMapper.getEntityFromInput(jobInput);
+
+        if (Double.parseDouble(jobInput.getMaxSalary()) < Double.parseDouble(jobInput.getMinSalary())) {
+            throw new AppException(HttpStatus.BAD_REQUEST, ErrorCode.INVALID_SALARY);
+        }
+
         jobEntity.setDescription(jobInput.getDescriptions()
                 .replaceAll("<li>|</li>|<ul>|</ul>|<br />", "")
         );

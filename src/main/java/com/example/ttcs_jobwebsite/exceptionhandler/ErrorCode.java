@@ -13,7 +13,8 @@ public enum ErrorCode {
     CODE_NOT_MATCH(400, "Mã xác nhận không hợp lệ"),
     RECORD_NOT_FOUND(404, "Không tồn tại bản ghi"),
     FILE_NOT_FOUND(400, "Nhập file PDF"),
-    INVALID_SALARY(400, "Nhập lương không hợp lệ")
+    INVALID_SALARY(400, "Nhập lương không hợp lệ"),
+    INVALID_STATUS(400, "Trạng thái không hợp lệ để thao tác")
     ;
 
     ErrorCode(int code, String message) {

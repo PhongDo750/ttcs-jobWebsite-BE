@@ -1,12 +1,10 @@
 package com.example.ttcs_jobwebsite.service;
 
+import com.example.ttcs_jobwebsite.cloudinary.CloudinaryHelper;
 import com.example.ttcs_jobwebsite.common.Common;
 import com.example.ttcs_jobwebsite.dto.ApiResponse;
 import com.example.ttcs_jobwebsite.dto.email.EmailDetails;
-import com.example.ttcs_jobwebsite.dto.user.LoginRequest;
-import com.example.ttcs_jobwebsite.dto.user.RecoverPassword;
-import com.example.ttcs_jobwebsite.dto.user.TokenResponse;
-import com.example.ttcs_jobwebsite.dto.user.UserRequest;
+import com.example.ttcs_jobwebsite.dto.user.*;
 import com.example.ttcs_jobwebsite.entity.UserEntity;
 import com.example.ttcs_jobwebsite.exceptionhandler.AppException;
 import com.example.ttcs_jobwebsite.exceptionhandler.ErrorCode;
@@ -20,7 +18,10 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -70,6 +71,50 @@ public class UserService {
         return TokenResponse.builder()
                 .accessToken(TokenHelper.generateToken(userEntity))
                 .role(userEntity.getRole())
+                .build();
+    }
+
+    @Transactional
+    public ApiResponse<?> changeUserInformation(String accessToken,
+                                                ChangeInfoUserRequest changeInfoUserRequest,
+                                                MultipartFile imageUrl, MultipartFile backgroundImg) {
+        Long userId = TokenHelper.getUserIdFromToken(accessToken);
+        UserEntity userEntity = customRepository.getUserBy(userId);
+        userMapper.updateEntityFromInput(userEntity, changeInfoUserRequest);
+
+        if (Objects.nonNull(changeInfoUserRequest.getBirthdayString())) {
+            String fixedDateStr = changeInfoUserRequest.getBirthdayString() + "T00:00:00+00:00";
+            DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+            OffsetDateTime birthday = OffsetDateTime.parse(fixedDateStr, formatter);
+            userEntity.setBirthday(birthday);
+        }
+        if (Objects.nonNull(imageUrl)) {
+            userEntity.setImageUrl(CloudinaryHelper.uploadAndGetFileUrl(imageUrl));
+        }
+
+        if (Objects.nonNull(backgroundImg)) {
+            userEntity.setBackgroundImage(CloudinaryHelper.uploadAndGetFileUrl(backgroundImg));
+        }
+
+        userEntity.setDescription(changeInfoUserRequest.getDescription()
+                .replaceAll("<li>|</li>|<ul>|</ul>|<br />", "")
+        );
+
+        userRepository.save(userEntity);
+        return ApiResponse.builder()
+                .code(200)
+                .message("Thay đổi thông tin thành công")
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public ApiResponse<UserOutputV2> getUserInformation(String accessToken){
+        Long userId = TokenHelper.getUserIdFromToken(accessToken);
+        UserEntity userEntity = customRepository.getUserBy(userId);
+        return ApiResponse.<UserOutputV2>builder()
+                .message("OK")
+                .code(200)
+                .data(userMapper.getOutputFromEntity(userEntity))
                 .build();
     }
 

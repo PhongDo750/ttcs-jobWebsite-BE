@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 @ControllerAdvice
@@ -26,18 +28,21 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<InvalidFieldResponse> handleValidationErrors(MethodArgumentNotValidException exception) {
-        FieldError firstError = exception.getBindingResult().getFieldErrors().get(0);
-        String field = firstError.getField();
-        String message = firstError.getDefaultMessage();
+        List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
 
-        Map<String, String> error = new HashMap<>();
-        error.put(field, message);
+        // Sử dụng LinkedHashMap để giữ nguyên thứ tự các field
+        Map<String, String> errors = new LinkedHashMap<>();
+        for (FieldError fieldError : fieldErrors) {
+            // Nếu một field có nhiều lỗi thì chỉ lấy lỗi đầu tiên (nếu muốn), hoặc có thể xử lý thêm
+            errors.putIfAbsent(fieldError.getField(), fieldError.getDefaultMessage());
+        }
+
         return ResponseEntity.badRequest().body(
                 InvalidFieldResponse.builder()
-                                    .code(400)
-                                    .message("INVALID_FIELD")
-                                    .error(error)
-                                    .build()
+                        .code(400)
+                        .message("INVALID_FIELD")
+                        .error(errors)
+                        .build()
         );
     }
 }

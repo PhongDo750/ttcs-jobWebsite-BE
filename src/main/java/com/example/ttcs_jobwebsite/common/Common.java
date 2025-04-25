@@ -7,6 +7,8 @@ public class Common {
     public static final String AUTHORIZATION = "AUTHORIZATION";
     public static final String PENDING_APPROVAL = "PENDING_APPROVAL";
     public static final String APPLIED = "APPLIED";
+    public static final String ACCEPTED = "ACCEPTED";
+    public static final String REJECTED = "REJECTED";
 
     public static final String CLOUDINARY_NAME = "cloud_name";
     public static final String CLOUDINARY_NAME_VALUE = "dxdndamgg";
