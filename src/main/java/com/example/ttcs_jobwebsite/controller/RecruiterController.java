@@ -25,4 +25,26 @@ public class RecruiterController {
                                        @ParameterObject Pageable pageable) {
         return recruiterService.getJobsBy(accessToken, pageable);
     }
+
+    @Operation(summary = "Xem job theo state")
+    @GetMapping("/state")
+    public Page<JobOutputV3> getJobsByState(@RequestHeader(Common.AUTHORIZATION) String accessToken,
+                                            @ParameterObject Pageable pageable,
+                                            @RequestParam String state) {
+        return recruiterService.getJobsByState(accessToken, pageable, state);
+    }
+
+    @Operation(summary = "Chấp nhận ứng tuyển")
+    @PostMapping("/accept")
+    public ApiResponse<?> acceptApplication(@RequestHeader(Common.AUTHORIZATION) String accessToken,
+                                            @RequestParam Long recruiterJobId) {
+        return recruiterService.acceptApplication(accessToken, recruiterJobId);
+    }
+
+    @Operation(summary = "Chấp nhận ứng tuyển")
+    @PostMapping("/reject")
+    public ApiResponse<?> rejectApplication(@RequestHeader(Common.AUTHORIZATION) String accessToken,
+                                            @RequestParam Long recruiterJobId) {
+        return recruiterService.rejectApplication(accessToken, recruiterJobId);
+    }
 }
