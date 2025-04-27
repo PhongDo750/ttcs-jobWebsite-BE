@@ -20,6 +20,7 @@ public class JobOutputV2 {
     private String occupationName;
     private String experience;
     private Integer headCount;
+    private String province;
     private String jobType;
     private String jobLevel;
     private String educationLevel;

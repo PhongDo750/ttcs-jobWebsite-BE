@@ -30,17 +30,17 @@ public class JobController {
 
     @Operation(summary = "Update Job")
     @PostMapping("/update")
-    public void updateJob(@RequestHeader(Common.AUTHORIZATION) String accessToken,
+    public ApiResponse<?> updateJob(@RequestHeader(Common.AUTHORIZATION) String accessToken,
                           @RequestBody @Valid JobInput jobInput,
                           @RequestParam Long jobId) {
-        jobService.updateJob(accessToken, jobInput, jobId);
+        return jobService.updateJob(accessToken, jobInput, jobId);
     }
 
     @Operation(summary = "Xóa tin tuyển dụng")
     @DeleteMapping("/delete")
-    public void deleteJob(@RequestHeader(Common.AUTHORIZATION) String accessToken,
+    public ApiResponse<?> deleteJob(@RequestHeader(Common.AUTHORIZATION) String accessToken,
                           @RequestParam Long jobId) {
-        jobService.deleteJob(accessToken, jobId);
+        return jobService.deleteJob(accessToken, jobId);
     }
 
     @Operation(summary = "Tìm kiếm job")

@@ -75,7 +75,7 @@ public class JobService {
     }
 
     @Transactional
-    public void updateJob(String accessToken, JobInput jobInput, Long jobId) {
+    public ApiResponse<?> updateJob(String accessToken, JobInput jobInput, Long jobId) {
         Long userId = TokenHelper.getUserIdFromToken(accessToken);
         UserEntity userEntity = customRepository.getUserBy(userId);
         if (!userEntity.getRole().equals(Common.RECRUITER)) {
@@ -89,10 +89,15 @@ public class JobService {
 
         jobMapper.updateEntityFromInput(jobEntity, jobInput);
         jobRepository.save(jobEntity);
+
+        return ApiResponse.builder()
+                .code(200)
+                .message("OK")
+                .build();
     }
 
     @Transactional
-    public void deleteJob(String accessToken, Long jobId) {
+    public ApiResponse<?> deleteJob(String accessToken, Long jobId) {
         Long userId = TokenHelper.getUserIdFromToken(accessToken);
         UserEntity userEntity = customRepository.getUserBy(userId);
         if (!userEntity.getRole().equals(Common.RECRUITER)) {
@@ -116,6 +121,11 @@ public class JobService {
         jobLikeMapRepository.deleteAllByJobId(jobId);
 
         jobRepository.deleteById(jobId);
+
+        return ApiResponse.builder()
+                .code(200)
+                .message("OK")
+                .build();
     }
 
     @Transactional(readOnly = true)
