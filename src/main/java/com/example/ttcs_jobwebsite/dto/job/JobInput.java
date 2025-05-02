@@ -39,13 +39,13 @@ public class JobInput {
     @NotEmpty(message = "Cấp bậc không được để trống")
     private String jobLevel;
 
-    @NotEmpty(message = "Mức lương tối thiểu không được để trống")
-    @Pattern(regexp = "^(?!0\\.00$)(?!0$)([1-9][0-9]*)(\\.\\d{1,2})?$", message = "Mức lương tối thiểu phải là số dương, không được âm hoặc chứa chữ")
-    private String minSalary;
+    @NotNull(message = "Mức lương tối thiểu không được để trống")
+    @Positive(message = "Mức lương tối thiểu phải là số dương, không được âm hoặc bằng 0")
+    private Double minSalary;
 
-    @NotEmpty(message = "Mức lương tối đa không được để trống")
-    @Pattern(regexp = "^(?!0\\.00$)(?!0$)([1-9][0-9]*)(\\.\\d{1,2})?$", message = "Mức lương tối đa phải là số dương, không được âm hoặc chứa chữ")
-    private String maxSalary;
+    @NotNull(message = "Mức lương tối đa không được để trống")
+    @Positive(message = "Mức lương tối đa phải là số dương, không được âm hoặc bằng 0")
+    private Double maxSalary;
 
     @NotEmpty(message = "Trình độ học vấn không được để trống")
     private String educationLevel;

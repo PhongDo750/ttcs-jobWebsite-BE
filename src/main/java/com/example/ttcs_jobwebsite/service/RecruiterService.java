@@ -35,6 +35,7 @@ public class RecruiterService {
     private final UserJobMapRepository userJobMapRepository;
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
+    private final PushNotificationService pushNotificationService;
 
     @Transactional(readOnly = true)
     public Page<JobOutputV1> getJobsBy(String accessToken, Pageable pageable) {
@@ -174,8 +175,8 @@ public class RecruiterService {
                             .build()
             );
 
-//            String jsonMessage = "{\"title\": \"Thông báo mới\", \"body\": \"Bạn đã ứng thành công cho công việc mới!\"}";
-//            pushNotificationService.sendNotification(userJobMapEntity.getUserId(), jsonMessage);
+            String jsonMessage = "{\"title\": \"Thông báo mới\", \"body\": \"Bạn đã ứng thành công cho công việc mới!\"}";
+            pushNotificationService.sendNotification(userJobMapEntity.getUserId(), jsonMessage);
         });
 
         return ApiResponse.builder()
@@ -228,8 +229,8 @@ public class RecruiterService {
                             .build()
             );
 
-//            String jsonMessage = "{\"title\": \"Thông báo mới\", \"body\": \"Rất tiếc, bạn đã ứng tuyển không thành công\"}";
-//            pushNotificationService.sendNotification(userJobMapEntity.getUserId(), jsonMessage);
+            String jsonMessage = "{\"title\": \"Thông báo mới\", \"body\": \"Rất tiếc, bạn đã ứng tuyển không thành công\"}";
+            pushNotificationService.sendNotification(userJobMapEntity.getUserId(), jsonMessage);
         });
 
         return ApiResponse.builder()

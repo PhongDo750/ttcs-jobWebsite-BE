@@ -35,7 +35,7 @@ public class UserService {
     private final PresenceService presenceService;
 
     @Transactional
-    public TokenResponse signUp(UserRequest signUpRequest) {
+    public ApiResponse<TokenResponse> signUp(UserRequest signUpRequest) {
         if (Boolean.TRUE.equals(userRepository.existsByUsername(signUpRequest.getUsername()))) {
             throw new AppException(HttpStatus.BAD_REQUEST, ErrorCode.USERNAME_EXISTED);
         }
@@ -52,14 +52,18 @@ public class UserService {
         UserEntity userEntity = userMapper.getEntityFromRequest(signUpRequest);
         userEntity.setImageUrl(Common.IMAGE_DEFAULT);
         userRepository.save(userEntity);
-        return TokenResponse.builder()
-                .accessToken(TokenHelper.generateToken(userEntity))
-                .role(userEntity.getRole())
+        return ApiResponse.<TokenResponse>builder()
+                .code(200)
+                .message("Đăng ký thành công")
+                .data(TokenResponse.builder()
+                        .accessToken(TokenHelper.generateToken(userEntity))
+                        .role(userEntity.getRole())
+                        .build())
                 .build();
     }
 
     @Transactional
-    public TokenResponse logIn(LoginRequest loginRequest) {
+    public ApiResponse<TokenResponse> logIn(LoginRequest loginRequest) {
         UserEntity userEntity = userRepository.findByUsername(loginRequest.getUsername());
         if (Objects.isNull(userEntity)) {
             throw new AppException(HttpStatus.UNAUTHORIZED, ErrorCode.USERNAME_NOT_EXISTED);
@@ -68,9 +72,13 @@ public class UserService {
         if (!BCrypt.checkpw(loginRequest.getPassword(), userEntity.getPassword())) {
             throw new AppException(HttpStatus.UNAUTHORIZED, ErrorCode.INCORRECT_PASSWORD);
         }
-        return TokenResponse.builder()
-                .accessToken(TokenHelper.generateToken(userEntity))
-                .role(userEntity.getRole())
+        return ApiResponse.<TokenResponse>builder()
+                .code(200)
+                .message("Đăng nhập thành công")
+                .data(TokenResponse.builder()
+                        .accessToken(TokenHelper.generateToken(userEntity))
+                        .role(userEntity.getRole())
+                        .build())
                 .build();
     }
 

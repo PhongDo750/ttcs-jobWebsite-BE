@@ -46,14 +46,12 @@ public class UserController {
     @Operation(summary = "Đăng ký tài khoản")
     @PostMapping("sign-up")
     public ApiResponse<TokenResponse> signUp(@RequestBody @Valid UserRequest signUpRequest){
-        return ApiResponse.<TokenResponse>builder()
-                .data(userService.signUp(signUpRequest))
-                .build();
+        return userService.signUp(signUpRequest);
     }
 
     @PostMapping("log-in")
-    public ResponseEntity<TokenResponse> logIn(@RequestBody @Valid LoginRequest logInRequest) {
-        return new ResponseEntity<>(userService.logIn(logInRequest), HttpStatus.OK);
+    public ApiResponse<TokenResponse> logIn(@RequestBody @Valid LoginRequest logInRequest) {
+        return userService.logIn(logInRequest);
     }
 
     @Operation(summary = "Lấy code để reset password")

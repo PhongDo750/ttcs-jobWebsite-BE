@@ -52,7 +52,7 @@ public class JobService {
 
         JobEntity jobEntity = jobMapper.getEntityFromInput(jobInput);
 
-        if (Double.parseDouble(jobInput.getMaxSalary()) < Double.parseDouble(jobInput.getMinSalary())) {
+        if (jobInput.getMaxSalary() < jobInput.getMinSalary()) {
             throw new AppException(HttpStatus.BAD_REQUEST, ErrorCode.INVALID_SALARY);
         }
 
@@ -85,6 +85,10 @@ public class JobService {
         JobEntity jobEntity = customRepository.getJobBy(jobId);
         if (!jobEntity.getUserId().equals(userId)) {
             throw new AppException(ErrorCode.UN_AUTHORIZATION);
+        }
+
+        if (jobInput.getMaxSalary() < jobInput.getMinSalary()) {
+            throw new AppException(HttpStatus.BAD_REQUEST, ErrorCode.INVALID_SALARY);
         }
 
         jobMapper.updateEntityFromInput(jobEntity, jobInput);

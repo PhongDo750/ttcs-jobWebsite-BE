@@ -26,6 +26,7 @@ public class UserInteractService {
     private final JobLikeMapRepository jobLikeMapRepository;
     private final RecruiterJobMapRepository recruiterJobMapRepository;
     private final NotificationRepository notificationRepository;
+    private final PushNotificationService pushNotificationService;
 
     @Transactional
     public ApiResponse<?> applyJob(String accessToken, ApplyJobInput applyJobInput, MultipartFile filePDF) {
@@ -82,8 +83,8 @@ public class UserInteractService {
                             .build()
             );
 
-//            String jsonMessage = "{\"title\": \"Thông báo mới\", \"body\": \"Một ứng viên vừa ứng tuyển vào công ty bạn\"}";
-//            pushNotificationService.sendNotification(jobEntity.getUserId(), jsonMessage);
+            String jsonMessage = "{\"title\": \"Thông báo mới\", \"body\": \"Một ứng viên vừa ứng tuyển vào công ty bạn\"}";
+            pushNotificationService.sendNotification(jobEntity.getUserId(), jsonMessage);
         });
         return ApiResponse.builder()
                 .message("OK")
