@@ -104,9 +104,11 @@ public class UserService {
             userEntity.setBackgroundImage(CloudinaryHelper.uploadAndGetFileUrl(backgroundImg));
         }
 
-        userEntity.setDescription(changeInfoUserRequest.getDescription()
-                .replaceAll("<li>|</li>|<ul>|</ul>|<br />", "")
-        );
+        if(changeInfoUserRequest.getDescription() != null) {
+            userEntity.setDescription(changeInfoUserRequest.getDescription()
+                    .replaceAll("<li>|</li>|<ul>|</ul>|<br />", "")
+            );
+        }
 
         userRepository.save(userEntity);
         return ApiResponse.builder()
