@@ -9,6 +9,7 @@ public class Common {
     public static final String APPLIED = "APPLIED";
     public static final String ACCEPTED = "ACCEPTED";
     public static final String REJECTED = "REJECTED";
+    public static final String ADMIN = "ADMIN";
 
     public static final String CLOUDINARY_NAME = "cloud_name";
     public static final String CLOUDINARY_NAME_VALUE = "dxdndamgg";
