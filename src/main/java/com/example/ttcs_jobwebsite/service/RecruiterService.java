@@ -10,6 +10,7 @@ import com.example.ttcs_jobwebsite.exceptionhandler.AppException;
 import com.example.ttcs_jobwebsite.exceptionhandler.ErrorCode;
 import com.example.ttcs_jobwebsite.repository.*;
 import com.example.ttcs_jobwebsite.token.TokenHelper;
+import com.example.ttcs_jobwebsite.websocket.WebSocketService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,6 +37,7 @@ public class RecruiterService {
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
     private final PushNotificationService pushNotificationService;
+    private final WebSocketService webSocketService;
 
     @Transactional(readOnly = true)
     public Page<JobOutputV1> getJobsBy(String accessToken, Pageable pageable) {
@@ -152,32 +154,36 @@ public class RecruiterService {
         userJobMapEntity.setState(Common.ACCEPTED);
         userJobMapRepository.save(userJobMapEntity);
 
-        CompletableFuture.runAsync(() -> {
-            notificationRepository.save(
-                    NotificationEntity.builder()
-                            .userId(recruiterId)
-                            .interactId(userJobMapEntity.getUserId())
-                            .jobId(userJobMapEntity.getJobId())
-                            .hasSeen(Boolean.FALSE)
-                            .type(Common.ACCEPTED)
-                            .createAt(LocalDateTime.now())
-                            .build()
-            );
+        notificationRepository.save(
+                NotificationEntity.builder()
+                        .userId(recruiterId)
+                        .interactId(userJobMapEntity.getUserId())
+                        .jobId(userJobMapEntity.getJobId())
+                        .hasSeen(Boolean.FALSE)
+                        .type(Common.ACCEPTED)
+                        .createAt(LocalDateTime.now())
+                        .build()
+        );
 
-            notificationRepository.save(
-                    NotificationEntity.builder()
-                            .userId(userJobMapEntity.getUserId())
-                            .interactId(recruiterId)
-                            .jobId(userJobMapEntity.getJobId())
-                            .hasSeen(Boolean.FALSE)
-                            .type(Common.ACCEPTED)
-                            .createAt(LocalDateTime.now())
-                            .build()
-            );
+        notificationRepository.save(
+                NotificationEntity.builder()
+                        .userId(userJobMapEntity.getUserId())
+                        .interactId(recruiterId)
+                        .jobId(userJobMapEntity.getJobId())
+                        .hasSeen(Boolean.FALSE)
+                        .type(Common.ACCEPTED)
+                        .createAt(LocalDateTime.now())
+                        .build()
+        );
 
-            String jsonMessage = "{\"title\": \"Thông báo mới\", \"body\": \"Bạn đã ứng thành công cho công việc mới!\"}";
-            pushNotificationService.sendNotification(userJobMapEntity.getUserId(), jsonMessage);
-        });
+        String jsonMessage = "{\"title\": \"Thông báo mới\", \"body\": \"Bạn đã ứng thành công cho công việc mới!\"}";
+        pushNotificationService.sendNotification(userJobMapEntity.getUserId(), jsonMessage);
+
+        int countUser = notificationRepository.countAllByUserIdAndHasSeenIsFalse(userJobMapEntity.getUserId());
+        webSocketService.sendNotificationCount(userJobMapEntity.getUserId(), countUser);
+
+        int countRecruiter = notificationRepository.countAllByUserIdAndHasSeenIsFalse(recruiterId);
+        webSocketService.sendNotificationCount(recruiterId, countRecruiter);
 
         return ApiResponse.builder()
                 .code(200)
@@ -206,32 +212,36 @@ public class RecruiterService {
         userJobMapEntity.setState(Common.REJECTED);
         userJobMapRepository.save(userJobMapEntity);
 
-        CompletableFuture.runAsync(() -> {
-            notificationRepository.save(
-                    NotificationEntity.builder()
-                            .userId(recruiterId)
-                            .interactId(userJobMapEntity.getUserId())
-                            .jobId(userJobMapEntity.getJobId())
-                            .hasSeen(Boolean.FALSE)
-                            .type(Common.REJECTED)
-                            .createAt(LocalDateTime.now())
-                            .build()
-            );
+        notificationRepository.save(
+                NotificationEntity.builder()
+                        .userId(recruiterId)
+                        .interactId(userJobMapEntity.getUserId())
+                        .jobId(userJobMapEntity.getJobId())
+                        .hasSeen(Boolean.FALSE)
+                        .type(Common.REJECTED)
+                        .createAt(LocalDateTime.now())
+                        .build()
+        );
 
-            notificationRepository.save(
-                    NotificationEntity.builder()
-                            .userId(userJobMapEntity.getUserId())
-                            .interactId(recruiterId)
-                            .jobId(userJobMapEntity.getJobId())
-                            .hasSeen(Boolean.FALSE)
-                            .type(Common.REJECTED)
-                            .createAt(LocalDateTime.now())
-                            .build()
-            );
+        notificationRepository.save(
+                NotificationEntity.builder()
+                        .userId(userJobMapEntity.getUserId())
+                        .interactId(recruiterId)
+                        .jobId(userJobMapEntity.getJobId())
+                        .hasSeen(Boolean.FALSE)
+                        .type(Common.REJECTED)
+                        .createAt(LocalDateTime.now())
+                        .build()
+        );
 
-            String jsonMessage = "{\"title\": \"Thông báo mới\", \"body\": \"Rất tiếc, bạn đã ứng tuyển không thành công\"}";
-            pushNotificationService.sendNotification(userJobMapEntity.getUserId(), jsonMessage);
-        });
+        String jsonMessage = "{\"title\": \"Thông báo mới\", \"body\": \"Rất tiếc, bạn đã ứng tuyển không thành công\"}";
+        pushNotificationService.sendNotification(userJobMapEntity.getUserId(), jsonMessage);
+
+        int countUser = notificationRepository.countAllByUserIdAndHasSeenIsFalse(userJobMapEntity.getUserId());
+        webSocketService.sendNotificationCount(userJobMapEntity.getUserId(), countUser);
+
+        int countRecruiter = notificationRepository.countAllByUserIdAndHasSeenIsFalse(recruiterId);
+        webSocketService.sendNotificationCount(recruiterId, countRecruiter);
 
         return ApiResponse.builder()
                 .code(200)
