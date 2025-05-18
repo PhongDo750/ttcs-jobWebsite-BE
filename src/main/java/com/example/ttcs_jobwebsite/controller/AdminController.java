@@ -3,6 +3,7 @@ package com.example.ttcs_jobwebsite.controller;
 import com.example.ttcs_jobwebsite.common.Common;
 import com.example.ttcs_jobwebsite.dto.ApiResponse;
 import com.example.ttcs_jobwebsite.dto.job.JobOutputV1;
+import com.example.ttcs_jobwebsite.dto.user.TokenResponse;
 import com.example.ttcs_jobwebsite.dto.user.UserOutputV2;
 import com.example.ttcs_jobwebsite.service.AdminService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,6 +19,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/admin")
 public class AdminController {
     private final AdminService adminService;
+
+    @Operation(summary = "Đăng nhập tài khoản người dùng")
+    @PostMapping("/login")
+    public ApiResponse<TokenResponse> loginById(@RequestParam Long userId,
+                                                @RequestHeader(Common.AUTHORIZATION) String accessToken) {
+        return adminService.logIn(userId, accessToken);
+    }
 
     @Operation(summary = "Lấy ra tất cả user và recruiter")
     @GetMapping

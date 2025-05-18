@@ -4,6 +4,8 @@ import com.example.ttcs_jobwebsite.common.Common;
 import com.example.ttcs_jobwebsite.dto.ApiResponse;
 import com.example.ttcs_jobwebsite.dto.job.JobOutputV1;
 import com.example.ttcs_jobwebsite.dto.user.CountUserOutput;
+import com.example.ttcs_jobwebsite.dto.user.LoginRequest;
+import com.example.ttcs_jobwebsite.dto.user.TokenResponse;
 import com.example.ttcs_jobwebsite.dto.user.UserOutputV2;
 import com.example.ttcs_jobwebsite.entity.JobEntity;
 import com.example.ttcs_jobwebsite.entity.UserEntity;
@@ -13,6 +15,7 @@ import com.example.ttcs_jobwebsite.exceptionhandler.ErrorCode;
 import com.example.ttcs_jobwebsite.repository.*;
 import com.example.ttcs_jobwebsite.token.TokenHelper;
 import lombok.AllArgsConstructor;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -22,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -35,6 +39,26 @@ public class AdminService {
     private final RecruiterJobMapRepository recruiterJobMapRepository;
     private final JobLikeMapRepository jobLikeMapRepository;
     private final NotificationRepository notificationRepository;
+
+    public ApiResponse<TokenResponse> logIn(Long userId, String accessToken) {
+
+        Long adminId = TokenHelper.getUserIdFromToken(accessToken);
+        UserEntity adminEntity = customRepository.getUserBy(adminId);
+        if(!adminEntity.getRole().equals("ADMIN")) {
+            throw new AppException(HttpStatus.UNAUTHORIZED, ErrorCode.UN_AUTHORIZATION);
+        }
+
+        UserEntity userEntity = customRepository.getUserBy(userId);
+
+        return ApiResponse.<TokenResponse>builder()
+                .code(200)
+                .message("Đăng nhập thành công")
+                .data(TokenResponse.builder()
+                        .accessToken(TokenHelper.generateToken(userEntity))
+                        .role(userEntity.getRole())
+                        .build())
+                .build();
+    }
 
     @Transactional(readOnly = true)
     public Page<UserOutputV2> getAllUsers(String accessToken, Pageable pageable) {
